@@ -1,4 +1,4 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
 import {
   ApiTags,
   ApiResponse,
@@ -7,11 +7,11 @@ import {
   ApiExtraModels,
 } from '@nestjs/swagger';
 
-import { PagesService } from './services/pages.service';
 import { PageRequestDto } from './dto/page-request.dto';
 import { HomePageResponseDto } from './dto/home-page-response.dto';
 import { CatalogPageResponseDto } from './dto/catalog-page-response.dto';
 import { ProductPageResponseDto } from './dto/product-page-response.dto';
+import { PagesInterceptor } from './pages.interceptor';
 
 @ApiTags('pages')
 @ApiExtraModels(
@@ -21,8 +21,6 @@ import { ProductPageResponseDto } from './dto/product-page-response.dto';
 )
 @Controller('api/pages')
 export class PagesController {
-  public constructor(private readonly pagesService: PagesService) {}
-
   @Post('/')
   @ApiBody({ type: PageRequestDto })
   @ApiResponse({
@@ -37,11 +35,8 @@ export class PagesController {
     },
   })
   @ApiResponse({ status: 400, description: 'Invalid type.' })
-  public processPage(@Body() pageDto: PageRequestDto) {
-    try {
-      return this.pagesService.process(pageDto.type);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+  @UseInterceptors(PagesInterceptor)
+  public processPage(@Body() pageContent: unknown) {
+    return pageContent;
   }
 }
