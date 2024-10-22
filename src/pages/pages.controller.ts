@@ -28,17 +28,13 @@ export class PagesController {
   @ApiResponse({
     status: 201,
     description: 'Page processed successfully.',
-    schema: { $ref: getSchemaPath(HomePageResponseDto) },
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Page processed successfully.',
-    schema: { $ref: getSchemaPath(CatalogPageResponseDto) },
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Page processed successfully.',
-    schema: { $ref: getSchemaPath(ProductPageResponseDto) },
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(HomePageResponseDto) },
+        { $ref: getSchemaPath(CatalogPageResponseDto) },
+        { $ref: getSchemaPath(ProductPageResponseDto) },
+      ],
+    },
   })
   @ApiResponse({ status: 400, description: 'Invalid type.' })
   public processPage(@Body() pageDto: PageRequestDto) {
